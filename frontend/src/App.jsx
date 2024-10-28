@@ -12,7 +12,7 @@ export default function App() {
         <Route path="/login" element={<LoginScreen />} />
         <Route
           path="*"
-          element={isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />}
+          // element={isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>
