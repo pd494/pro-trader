@@ -1,23 +1,49 @@
 import React, { useState } from 'react';
-import LoginScreen from './components/screens/LoginScreen';
-import './App.css';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Dashboard from './components/screens/Dashboard';
-import { SignupScreen } from './components/screens/SignUpScreen';
-export default function App() {
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { SignupScreen } from './components/auth/SignupScreen';
+import { SigninScreen } from './components/auth/SigninScreen';
+import { MainLayout } from './layouts/MainLayout';
+import { Dashboard } from './components/Dashboard';
+import { PortfolioView } from './components/PortfolioView';
+import { StockDetail } from './components/StockDetail';
+import { useStocks } from './hooks/useStocks';
+function App() {
+  const [selectedStock, setSelectedStock] = useState(null);
+  const { getStockBySymbol } = useStocks();
 
+  const handleSelectStock = (symbol) => {
+    setSelectedStock(symbol);
+  };
 
+  const stock = selectedStock ? getStockBySymbol(selectedStock) : null;
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const AuthenticatedApp = () => (
+    <MainLayout onSelectStock={handleSelectStock}>
+      {(activeTab) => (
+        <>
+          {activeTab === 'markets' ? <Dashboard /> : <PortfolioView />}
+          {stock && (
+            <StockDetail 
+              stock={stock} 
+              onClose={() => setSelectedStock(null)} 
+            />
+          )}
+        </>
+      )}
+    </MainLayout>
+  );
 
   return (
-    <Router> 
+    <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<LoginScreen />} />
-        <Route path="/dashboard" component={Dashboard} />
         <Route path="/signup" element={<SignupScreen />} />
+        <Route path="/signin" element={<SigninScreen />} />
+        <Route path="/" element={<AuthenticatedApp />} />
+        <Route path="/dashboard" element={<Dashboard />} />
 
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
+
+export default App;
