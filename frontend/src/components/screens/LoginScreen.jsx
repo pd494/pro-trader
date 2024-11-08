@@ -3,14 +3,38 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginScreen() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+
+    const hardcodedToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InByYXNhbnRoZGVuZHVrdXJpQGdtYWlsLmNvbSIsIkZpcnN0X25hbWUiOiJQcmFzYW50aCIsIkxhc3RfbmFtZSI6IkRlbmR1a3VyaSIsIlVJRCI6IjY3MmM2N2NiNTI5NTBlZTRjNDFiZGExMSIsImV4cCI6MTczMTA0OTgwM30.xRK-0hYcpr_4lBuI0Ust1QAjYfPxovipxTO1u3K7d5g";
     e.preventDefault();
-    console.log('Submitted:', email, password);
+    try {
+      const response = await axios.post('http://localhost:8000/users/login', {
+        email, 
+        password
+      }, {
+        headers: {
+          'Authorization': `Bearer ${hardcodedToken}`
+        }
+      });
+
+      const {token} = response.data;
+      localStorage.setItem('token', token);
+      console.log('Login succesful:', token)
+      navigate('/dashboard')
+      
+    }
+    catch(error){
+      console.log(error.response)
+    }
+    
   };
 
   return (
